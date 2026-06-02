@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Masquerade® Dental Hospital — Secure Office Admin Dashboard</title>
+  
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Custom Stylesheets -->
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/admin.css">
+</head>
+<body class="bg-light">
+
+  <!-- Demo Mode Banner -->
+  <div id="offline-banner" class="offline-banner"></div>
+
+  <!-- Main Navigation Header -->
+  <header class="main-header">
+    <div class="container nav-container" style="height: 70px;">
+      <a href="index.html" class="logo" style="font-size: 1.4rem;">
+        <div class="logo-icon" style="width: 32px; height: 32px; font-size: 0.9rem;">
+          <i class="fas fa-lock"></i>
+        </div>
+        <span>Masquerade Admin</span>
+      </a>
+      
+      <div class="admin-profile" id="admin-profile-nav">
+        <span class="admin-badge-indicator" id="admin-indicator">Administrator Live</span>
+        <button id="logout-btn" class="btn btn-outline" style="padding: 8px 16px; font-size: 0.85rem; border-color: var(--clr-primary-300);">
+          <i class="fas fa-sign-out-alt"></i> Logout
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Toast Slide Notices -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- ADMIN LOGIN CONTAINER -->
+  <main id="login-section" class="admin-login-wrapper">
+    <div class="login-card">
+      <div class="login-header">
+        <div class="logo-icon" style="margin: 0 auto 15px auto; width: 50px; height: 50px; font-size: 1.4rem;">
+          <i class="fas fa-user-shield"></i>
+        </div>
+        <h2>Masquerade® Office Login</h2>
+        <p>Enter clinic credentials to manage appointment booking records.</p>
+      </div>
+
+      <form id="login-form">
+        <div class="form-group" style="margin-bottom: 20px;">
+          <label for="username" class="form-label">Username</label>
+          <input type="text" id="username" class="form-input" placeholder="e.g. admin" required>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 25px;">
+          <label for="password" class="form-label">Secret Password</label>
+          <input type="password" id="password" class="form-input" placeholder="••••••••" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="width: 100%; padding: 14px;">
+          <i class="fas fa-lock-open"></i> Secure Log In
+        </button>
+      </form>
+      
+      <div style="text-align: center; margin-top: 25px; font-size: 0.8rem; color: var(--clr-neutral-600);">
+        * Development defaults: <strong>admin</strong> / <strong>dentaladmin123</strong>
+      </div>
+    </div>
+  </main>
+
+  <!-- CLINIC OFFICE DASHBOARD SECTION -->
+  <main id="dashboard-section" class="dashboard-wrapper">
+    <div class="container">
+      
+      <!-- Top Title and Stats -->
+      <div class="dashboard-header">
+        <div>
+          <h1 style="font-size: 2rem;">Masquerade® Dental Hospital Dashboard</h1>
+          <p>NABH Accredited Clinical Scheduling and Slot Management Control Panel</p>
+        </div>
+        <div>
+          <button id="export-csv-btn" class="btn btn-primary" style="padding: 10px 20px; font-size: 0.9rem;">
+            <i class="fas fa-file-excel"></i> Export Appointments (CSV)
+          </button>
+        </div>
+      </div>
+
+      <!-- Stats Grid -->
+      <div class="stats-grid">
+        <div class="stat-card total">
+          <div class="stat-info">
+            <h4>Total Requests</h4>
+            <div class="stat-value" id="count-total">0</div>
+          </div>
+          <div class="stat-icon"><i class="fas fa-inbox"></i></div>
+        </div>
+
+        <div class="stat-card approved">
+          <div class="stat-info">
+            <h4>Approved Slots</h4>
+            <div class="stat-value" id="count-approved">0</div>
+          </div>
+          <div class="stat-icon"><i class="fas fa-calendar-check"></i></div>
+        </div>
+
+        <div class="stat-card pending">
+          <div class="stat-info">
+            <h4>Pending Requests</h4>
+            <div class="stat-value" id="count-pending">0</div>
+          </div>
+          <div class="stat-icon"><i class="fas fa-hourglass-half"></i></div>
+        </div>
+
+        <div class="stat-card rejected">
+          <div class="stat-info">
+            <h4>Rejected Requests</h4>
+            <div class="stat-value" id="count-rejected">0</div>
+          </div>
+          <div class="stat-icon"><i class="fas fa-calendar-times"></i></div>
+        </div>
+      </div>
+
+      <!-- Section Tabs Navigation -->
+      <div class="dashboard-nav">
+        <button class="dash-tab-btn active" data-tab="appointments"><i class="fas fa-list-ul"></i> Appointments List</button>
+        <button class="dash-tab-btn" data-tab="calendar"><i class="far fa-calendar-alt"></i> Dynamic Calendar View</button>
+        <button class="dash-tab-btn" data-tab="blocked-dates"><i class="fas fa-ban"></i> Block Holidays & Dates</button>
+      </div>
+
+      <!-- Tab View 1: Appointments List Table -->
+      <section id="appointments-view" class="dashboard-view active">
+        <!-- Search and Filter Row -->
+        <div class="controls-card">
+          <div class="search-filter-grid">
+            <div class="form-group" style="gap: 5px;">
+              <label for="app-search" class="form-label" style="font-size: 0.8rem;">Search Patient or Ref ID</label>
+              <input type="text" id="app-search" class="form-input" placeholder="Type name, phone, or MD-XXXX...">
+            </div>
+            
+            <div class="form-group" style="gap: 5px;">
+              <label for="app-status-filter" class="form-label" style="font-size: 0.8rem;">Status Filter</label>
+              <select id="app-status-filter" class="form-input" style="height: 48px;">
+                <option value="">All Statuses</option>
+                <option value="Pending">Pending</option>
+                <option value="Approved">Approved</option>
+                <option value="Rejected">Rejected</option>
+              </select>
+            </div>
+
+            <div class="form-group" style="gap: 5px;">
+              <label for="app-date-filter" class="form-label" style="font-size: 0.8rem;">Filter by Date</label>
+              <input type="date" id="app-date-filter" class="form-input">
+            </div>
+
+            <button onclick="document.getElementById('app-search').value=''; document.getElementById('app-status-filter').value=''; document.getElementById('app-date-filter').value=''; document.getElementById('app-search').dispatchEvent(new Event('input'));" class="btn btn-outline" style="padding: 13px; font-size: 0.9rem; border-color: var(--clr-neutral-300);">
+              <i class="fas fa-redo-alt"></i> Clear Filters
+            </button>
+          </div>
+        </div>
+
+        <!-- Tabular representation -->
+        <div class="table-card">
+          <div class="table-wrapper">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Ref Number</th>
+                  <th>Patient Name</th>
+                  <th>Appointment Date</th>
+                  <th>Time Slot</th>
+                  <th>Treatment</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="app-table-body">
+                <!-- Dynamically loaded -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- Tab View 2: Dynamic Calendar View -->
+      <section id="calendar-view" class="dashboard-view">
+        <div class="calendar-layout">
+          <!-- Calendar Grid Box -->
+          <div class="calendar-card">
+            <div class="calendar-ctrl-header">
+              <h3 class="calendar-month-year" id="cal-month-year">June 2026</h3>
+              <div class="calendar-arrows">
+                <button class="arrow-btn" id="cal-prev"><i class="fas fa-chevron-left"></i></button>
+                <button class="arrow-btn" id="cal-next"><i class="fas fa-chevron-right"></i></button>
+              </div>
+            </div>
+
+            <!-- Calendar grid header weekdays -->
+            <div class="calendar-weekdays">
+              <div>Mon</div>
+              <div>Tue</div>
+              <div>Wed</div>
+              <div>Thu</div>
+              <div>Fri</div>
+              <div>Sat</div>
+              <div>Sun</div>
+            </div>
+
+            <!-- Calendar cells grid -->
+            <div class="calendar-grid" id="cal-grid">
+              <!-- Dynamically populated days -->
+            </div>
+          </div>
+
+          <!-- Calendar Side Pane Day Details -->
+          <div class="details-pane">
+            <div class="details-pane-header">
+              <h4 class="details-pane-title">Schedules for <span id="selected-date-label">YYYY-MM-DD</span></h4>
+            </div>
+            
+            <div id="pane-apps-container">
+              <!-- Dynamically filled with specific day card records -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Tab View 3: Block Dates and Holidays Management -->
+      <section id="blocked-dates-view" class="dashboard-view">
+        <div class="blocked-dates-layout">
+          
+          <!-- Block Date form -->
+          <div class="blocked-list-box">
+            <h3 style="margin-bottom: 20px; font-size: 1.3rem;">Block Clinic Operating Date</h3>
+            <p style="font-size: 0.9rem; margin-bottom: 25px;">
+              Admin can manually block a calendar date for clinic closures, emergency leaves, or public holidays. <strong>Any conflicting pending bookings for this date will be auto-rejected automatically.</strong>
+            </p>
+
+            <form id="blocked-form">
+              <div class="form-group" style="margin-bottom: 20px;">
+                <label for="block-date" class="form-label">Pick Date to Block *</label>
+                <input type="date" id="block-date" class="form-input" required>
+              </div>
+
+              <div class="form-group" style="margin-bottom: 25px;">
+                <label for="block-reason" class="form-label">Reason for Closure *</label>
+                <input type="text" id="block-reason" class="form-input" placeholder="e.g. Christmas Day Holiday / Maintenance" required>
+              </div>
+
+              <button type="submit" class="btn btn-primary" style="padding: 12px 30px;">
+                <i class="fas fa-ban"></i> Apply Closure Date Block
+              </button>
+            </form>
+          </div>
+
+          <!-- Blocked List panel -->
+          <div class="blocked-list-box">
+            <h3 style="margin-bottom: 20px; font-size: 1.3rem;">Currently Blocked Closure Dates</h3>
+            <div id="blocked-list-container">
+              <!-- Dynamically loaded list of closures -->
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- APPOINTMENT PREVIEW MODAL -->
+  <div id="detail-modal" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Booking Reference: <span id="modal-ref">MD-XXXXXXXX-XXXX</span></h3>
+        <button class="modal-close" id="modal-close">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="modal-detail-grid">
+          
+          <div class="modal-detail-item">
+            <h5>Patient Name</h5>
+            <p id="modal-name">Sarah Connor</p>
+          </div>
+
+          <div class="modal-detail-item">
+            <h5>Phone Number</h5>
+            <p id="modal-phone">0987654321</p>
+          </div>
+
+          <div class="modal-detail-item">
+            <h5>Email Address</h5>
+            <p id="modal-email">sarah@skynet.com</p>
+          </div>
+
+          <div class="modal-detail-item">
+            <h5>Status</h5>
+            <span class="status-badge pending" id="modal-status-badge">Pending</span>
+          </div>
+
+          <div class="modal-detail-item">
+            <h5>Appointment Date</h5>
+            <p id="modal-date">2026-06-02</p>
+          </div>
+
+          <div class="modal-detail-item">
+            <h5>Requested Time Slot</h5>
+            <p id="modal-slot">10:00 - 11:00</p>
+          </div>
+
+          <div class="modal-detail-item">
+            <h5>Treatment Required</h5>
+            <p id="modal-treatment">Dental Checkup</p>
+          </div>
+
+          <div class="modal-detail-item full">
+            <h5>Additional Patient Notes</h5>
+            <div class="modal-notes-box" id="modal-notes">
+              Routine checkup and dental cleaning.
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button id="modal-approve-btn" class="btn btn-primary" style="padding: 10px 20px; font-size: 0.85rem;"><i class="fas fa-check"></i> Approve Appointment</button>
+        <button id="modal-reject-btn" class="btn btn-outline" style="padding: 10px 20px; font-size: 0.85rem; border-color: var(--clr-danger); color: var(--clr-danger);"><i class="fas fa-times"></i> Reject Request</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Admin Dashboard Controller JS -->
+  <script src="js/admin.js"></script>
+</body>
+</html>
